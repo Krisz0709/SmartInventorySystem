@@ -1,0 +1,87 @@
+# =========================
+# Java / Maven backend
+# =========================
+
+**/target/
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+*.class
+*.log
+
+# =========================
+# IntelliJ IDEA
+# =========================
+
+.idea/
+**/.idea/
+*.iws
+*.iml
+*.ipr
+
+# IntelliJ megosztott futtatási konfigurációk
+.run/
+**/.run/
+
+# =========================
+# Eclipse / STS
+# =========================
+
+.apt_generated/
+.classpath
+.factorypath
+.project
+.settings/
+.springBeans
+.sts4-cache/
+
+# =========================
+# NetBeans
+# =========================
+
+**/nbproject/private/
+**/nbbuild/
+**/dist/
+**/nbdist/
+**/.nb-gradle/
+
+# =========================
+# Visual Studio Code
+# =========================
+
+.vscode/
+**/.vscode/
+
+# =========================
+# React / Node frontend
+# =========================
+
+**/node_modules/
+**/dist/
+**/.vite/
+**/coverage/
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# =========================
+# Titkos és helyi beállítások
+# =========================
+
+.env
+.env.*
+!.env.example
+
+**/application-local.yml
+**/application-secret.yml
+**/application-local.properties
+**/application-secret.properties
+
+# =========================
+# Operációs rendszer
+# =========================
+
+.DS_Store
+Thumbs.db
+desktop.ini
