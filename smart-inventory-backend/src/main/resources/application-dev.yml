@@ -27,3 +27,12 @@ management:
     web:
       exposure:
         include: health,info
+
+app:
+  bootstrap:
+    admin:
+      enabled: ${ADMIN_BOOTSTRAP_ENABLED:true}
+      username: ${ADMIN_USERNAME:admin}
+      password: ${ADMIN_PASSWORD:}
+      email: ${ADMIN_EMAIL:admin@smartinventory.local}
+      full-name: ${ADMIN_FULL_NAME:Rendszergazda}
