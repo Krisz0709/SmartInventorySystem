@@ -31,6 +31,13 @@ public class Vehicle {
     @Column(name = "type_name", length = 255)
     private String typeName;
 
+    @Column(length = 100)
+    private String brand;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "vehicle_condition", length = 20)
+    private VehicleCondition vehicleCondition;
+
     @Column(name = "registration_number", length = 20)
     private String registrationNumber;
 
