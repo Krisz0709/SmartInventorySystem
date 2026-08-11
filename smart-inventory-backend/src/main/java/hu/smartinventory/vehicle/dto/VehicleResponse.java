@@ -3,6 +3,7 @@ package hu.smartinventory.vehicle.dto;
 import hu.smartinventory.vehicle.entity.VatType;
 import hu.smartinventory.vehicle.entity.Vehicle;
 import hu.smartinventory.vehicle.entity.VehicleStatus;
+import hu.smartinventory.vehicle.entity.VehicleCondition;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -13,6 +14,8 @@ public record VehicleResponse(
         String vin,
         String vinShort,
         String typeName,
+        String brand,
+        VehicleCondition vehicleCondition,
         String registrationNumber,
         LocalDate acquisitionDate,
         VehicleStatus status,
@@ -29,6 +32,8 @@ public record VehicleResponse(
                 vehicle.getVin(),
                 vehicle.getVinShort(),
                 vehicle.getTypeName(),
+                vehicle.getBrand(),
+                vehicle.getVehicleCondition(),
                 vehicle.getRegistrationNumber(),
                 vehicle.getAcquisitionDate(),
                 vehicle.getStatus(),
