@@ -8,7 +8,9 @@ import java.util.Optional;
 
 public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 
-    Optional<Vehicle> findByVin(String vin);
+    Optional<Vehicle> findByVinIgnoreCase(String vin);
+
+    List<Vehicle> findAllByVinShortIgnoreCaseOrderByIdAsc(String vinShort);
 
     List<Vehicle> findAllByOrderByIdAsc();
 }
