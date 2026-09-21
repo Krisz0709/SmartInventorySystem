@@ -7,4 +7,6 @@ public interface VehicleCostEntryRepository
         extends JpaRepository<VehicleCostEntry, Long> {
 
     boolean existsBySourceFingerprint(String sourceFingerprint);
+
+    long countByVehicle_Id(Long vehicleId);
 }

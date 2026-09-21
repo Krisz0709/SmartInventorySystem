@@ -119,4 +119,23 @@ public class Vehicle {
             vinShort = vin.substring(vin.length() - 7);
         }
     }
+
+    public Vehicle(
+            String vin,
+            String typeName,
+            String registrationNumber,
+            String brand,
+            LocalDate acquisitionDate
+    ) {
+        this.vin = vin;
+        this.typeName = typeName;
+        this.registrationNumber = registrationNumber;
+        this.brand = brand;
+        this.acquisitionDate = acquisitionDate;
+
+        this.status = VehicleStatus.IMPORTED;
+        this.vatType = VatType.NORMAL_VAT;
+
+        normalizeVin();
+    }
 }
