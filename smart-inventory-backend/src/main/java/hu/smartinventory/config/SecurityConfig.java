@@ -44,6 +44,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/roles/**")
                         .hasRole("ADMIN")
 
+                        .requestMatchers("/api/v1/imports/**")
+                        .hasRole("ADMIN")
+
                         .anyRequest()
                         .authenticated()
                 )
