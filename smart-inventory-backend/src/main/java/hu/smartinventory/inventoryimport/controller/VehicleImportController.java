@@ -1,13 +1,16 @@
 package hu.smartinventory.inventoryimport.controller;
 
+import hu.smartinventory.inventoryimport.dto.VehicleImportHistoryResponse;
 import hu.smartinventory.inventoryimport.dto.VehicleImportResult;
 import hu.smartinventory.inventoryimport.service.VehicleFileImportService;
+import hu.smartinventory.inventoryimport.service.VehicleImportHistoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/imports")
@@ -15,6 +18,7 @@ import java.io.IOException;
 public class VehicleImportController {
 
     private final VehicleFileImportService vehicleFileImportService;
+    private final VehicleImportHistoryService vehicleImportHistoryService;
 
     @PostMapping(
             value = "/vehicles",
@@ -44,6 +48,11 @@ public class VehicleImportController {
                 originalFilename,
                 file.getBytes()
         );
+    }
+
+    @GetMapping("/vehicles/history")
+    public List<VehicleImportHistoryResponse> findVehicleImportHistory() {
+        return vehicleImportHistoryService.findVehicleImportHistory();
     }
 
     private void validateFilename(String filename) {

@@ -20,6 +20,7 @@ public record VehicleResponse(
         LocalDate acquisitionDate,
         VehicleStatus status,
         VatType vatType,
+        BigDecimal totalCostAmount,
         BigDecimal advertisedPriceGross,
         String priceSource,
         Instant priceUpdatedAt,
@@ -27,6 +28,13 @@ public record VehicleResponse(
 ) {
 
     public static VehicleResponse from(Vehicle vehicle) {
+        return from(vehicle, BigDecimal.ZERO);
+    }
+
+    public static VehicleResponse from(
+            Vehicle vehicle,
+            BigDecimal totalCostAmount
+    ) {
         return new VehicleResponse(
                 vehicle.getId(),
                 vehicle.getVin(),
@@ -38,6 +46,7 @@ public record VehicleResponse(
                 vehicle.getAcquisitionDate(),
                 vehicle.getStatus(),
                 vehicle.getVatType(),
+                totalCostAmount,
                 vehicle.getAdvertisedPriceGross(),
                 vehicle.getPriceSource(),
                 vehicle.getPriceUpdatedAt(),

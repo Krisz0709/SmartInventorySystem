@@ -2,12 +2,16 @@ package hu.smartinventory.inventoryimport.service;
 
 import hu.smartinventory.inventoryimport.dto.VehicleImportResult;
 import hu.smartinventory.inventoryimport.dto.VehicleImportRow;
+import hu.smartinventory.inventoryimport.dto.VehicleImportRowError;
 import hu.smartinventory.inventoryimport.entity.ImportBatch;
+import hu.smartinventory.inventoryimport.entity.ImportRowError;
 import hu.smartinventory.inventoryimport.entity.ImportType;
 import hu.smartinventory.inventoryimport.repository.ImportBatchRepository;
+import hu.smartinventory.inventoryimport.repository.ImportRowErrorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import hu.smartinventory.inventoryimport.dto.VehicleExcelParseResult;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -20,6 +24,7 @@ public class VehicleFileImportService {
     private final HashService hashService;
     private final VehicleExcelParser vehicleExcelParser;
     private final ImportBatchRepository importBatchRepository;
+    private final ImportRowErrorRepository importRowErrorRepository;
     private final VehicleImportService vehicleImportService;
 
     @Transactional
@@ -45,10 +50,13 @@ public class VehicleFileImportService {
             );
         }
 
-        List<VehicleImportRow> rows =
+        VehicleExcelParseResult parseResult =
                 vehicleExcelParser.parse(
                         new ByteArrayInputStream(fileContent)
                 );
+
+        List<VehicleImportRow> rows =
+                parseResult.rows();
 
         ImportBatch importBatch = new ImportBatch(
                 ImportType.VEHICLE,
@@ -58,6 +66,18 @@ public class VehicleFileImportService {
 
         importBatch =
                 importBatchRepository.save(importBatch);
+
+        for (VehicleImportRowError error : parseResult.errors()) {
+
+            ImportRowError importRowError =
+                    new ImportRowError(
+                            importBatch,
+                            error.sourceRowNumber(),
+                            error.message()
+                    );
+
+            importRowErrorRepository.save(importRowError);
+        }
 
         int insertedRows = 0;
         int skippedRows = 0;
@@ -77,8 +97,11 @@ public class VehicleFileImportService {
             }
         }
 
-        int totalRows = rows.size();
-        int rejectedRows = 0;
+        int rejectedRows =
+                parseResult.rejectedRows();
+
+        int totalRows =
+                rows.size() + rejectedRows;
 
         importBatch.setResult(
                 totalRows,
@@ -94,7 +117,8 @@ public class VehicleFileImportService {
                 totalRows,
                 insertedRows,
                 skippedRows,
-                rejectedRows
+                rejectedRows,
+                parseResult.errors()
         );
     }
 }

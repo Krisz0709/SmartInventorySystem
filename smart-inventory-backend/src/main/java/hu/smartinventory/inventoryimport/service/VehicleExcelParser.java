@@ -3,6 +3,8 @@ package hu.smartinventory.inventoryimport.service;
 import hu.smartinventory.inventoryimport.dto.VehicleImportRow;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.stereotype.Service;
+import hu.smartinventory.inventoryimport.dto.VehicleExcelParseResult;
+import hu.smartinventory.inventoryimport.dto.VehicleImportRowError;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,7 +31,32 @@ public class VehicleExcelParser {
             "Összeg"
     );
 
-    public List<VehicleImportRow> parse(InputStream inputStream)
+    private void validateRow(VehicleImportRow row) {
+
+        if (row.vin() == null
+                || row.vin().trim().length() != 17) {
+
+            throw new IllegalArgumentException(
+                    "Az alvázszámnak 17 karakteresnek kell lennie."
+            );
+        }
+
+        if (row.accountingDate() == null) {
+
+            throw new IllegalArgumentException(
+                    "A könyvelési dátum kötelező."
+            );
+        }
+
+        if (row.amount() == null) {
+
+            throw new IllegalArgumentException(
+                    "Az összeg kötelező."
+            );
+        }
+    }
+
+    public VehicleExcelParseResult parse(InputStream inputStream)
             throws IOException {
 
         try (Workbook workbook = WorkbookFactory.create(inputStream)) {
@@ -43,11 +70,17 @@ public class VehicleExcelParser {
             Map<String, Integer> columns =
                     buildColumnMap(headerRow);
 
-            List<VehicleImportRow> result = new ArrayList<>();
+            List<VehicleImportRow> result =
+                    new ArrayList<>();
 
-            for (int rowIndex = headerRowIndex + 1;
-                 rowIndex <= sheet.getLastRowNum();
-                 rowIndex++) {
+            List<VehicleImportRowError> errors =
+                    new ArrayList<>();
+
+            for (
+                    int rowIndex = headerRowIndex + 1;
+                    rowIndex <= sheet.getLastRowNum();
+                    rowIndex++
+            ) {
 
                 Row row = sheet.getRow(rowIndex);
 
@@ -55,22 +88,46 @@ public class VehicleExcelParser {
                     continue;
                 }
 
-                String vin = getText(
-                        row,
-                        columns.get("Alvázszám")
-                );
+                String vin =
+                        getText(
+                                row,
+                                columns.get("Alvázszám")
+                        );
 
+                /*
+                 * VIN nélküli sorokat nem tekintünk autósornak.
+                 *
+                 * Ez azért fontos, mert az ERP Excelben lehet például
+                 * összesítő sor a táblázat végén.
+                 */
                 if (vin.isBlank()) {
                     continue;
                 }
 
-                VehicleImportRow importRow =
-                        parseRow(row, columns);
+                try {
 
-                result.add(importRow);
+                    VehicleImportRow importRow =
+                            parseRow(row, columns);
+
+                    validateRow(importRow);
+
+                    result.add(importRow);
+
+                } catch (IllegalArgumentException exception) {
+
+                    errors.add(
+                            new VehicleImportRowError(
+                                    row.getRowNum() + 1,
+                                    exception.getMessage()
+                            )
+                    );
+                }
             }
 
-            return result;
+            return new VehicleExcelParseResult(
+                    result,
+                    errors
+            );
         }
     }
 
@@ -151,7 +208,7 @@ public class VehicleExcelParser {
         Cell cell = row.getCell(columnIndex);
 
         if (cell == null || cell.getCellType() == CellType.BLANK) {
-            return BigDecimal.ZERO;
+            return null;
         }
 
         if (cell.getCellType() == CellType.NUMERIC) {

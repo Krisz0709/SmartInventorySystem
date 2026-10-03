@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.util.List;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import hu.smartinventory.inventoryimport.dto.VehicleExcelParseResult;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -26,9 +27,13 @@ class VehicleExcelParserTest {
 
         byte[] excelFile = createTestExcel();
 
-        List<VehicleImportRow> result = parser.parse(
+        VehicleExcelParseResult parseResult = parser.parse(
                 new ByteArrayInputStream(excelFile)
         );
+
+        List<VehicleImportRow> result = parseResult.rows();
+
+        assertEquals(0, parseResult.rejectedRows());
 
         assertEquals(1, result.size());
 
@@ -186,9 +191,13 @@ class VehicleExcelParserTest {
 
         byte[] excelFile = createTestExcelWithDifferentColumnOrder();
 
-        List<VehicleImportRow> result = parser.parse(
+        VehicleExcelParseResult parseResult = parser.parse(
                 new ByteArrayInputStream(excelFile)
         );
+
+        List<VehicleImportRow> result = parseResult.rows();
+
+        assertEquals(0, parseResult.rejectedRows());
 
         assertEquals(1, result.size());
 

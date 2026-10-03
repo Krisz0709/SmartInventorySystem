@@ -3,6 +3,7 @@ package hu.smartinventory.inventoryimport.controller;
 import hu.smartinventory.config.SecurityConfig;
 import hu.smartinventory.inventoryimport.dto.VehicleImportResult;
 import hu.smartinventory.inventoryimport.service.VehicleFileImportService;
+import hu.smartinventory.inventoryimport.service.VehicleImportHistoryService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -30,6 +31,9 @@ class VehicleImportSecurityTest {
 
     @MockitoBean
     private VehicleFileImportService vehicleFileImportService;
+
+    @MockitoBean
+    private VehicleImportHistoryService vehicleImportHistoryService;
 
     @MockitoBean
     private UserDetailsService userDetailsService;
